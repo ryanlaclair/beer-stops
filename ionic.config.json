@@ -1,0 +1,7 @@
+{
+  "name": "BeerStops",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
