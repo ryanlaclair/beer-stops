@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 
-import { GoogleMapsProvider } from '../../providers/google-maps/google-maps'
+import { GoogleMapsProvider } from '../../providers/google-maps/google-maps';
 
 @Component({
   selector: 'map',
@@ -10,8 +10,6 @@ import { GoogleMapsProvider } from '../../providers/google-maps/google-maps'
 export class MapComponent {
 
   @ViewChild('map') mapElement: ElementRef;
-
-  apiKey: string = 'AIzaSyCIx0MKgQnr03E1koIG5ojQAUivrlY34LM';
 
   constructor(private mapsProvider: GoogleMapsProvider) { }
 

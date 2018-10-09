@@ -7,11 +7,19 @@
 </ion-header>
 
 <ion-content padding>
-  <map></map>
+  <ion-card class="map-card">
+    <map></map>
+  </ion-card>
+  
   <ion-slides pager>
-    <ion-slide>1</ion-slide>
-    <ion-slide>2</ion-slide>
-    <ion-slide>3</ion-slide>
-    <ion-slide>4</ion-slide>
+    <ion-slide>
+      <ion-card class="brewery-card"><ion-card-content>1</ion-card-content></ion-card>
+    </ion-slide>
+    <ion-slide>
+      <ion-card class="brewery-card"><ion-card-content>2</ion-card-content></ion-card>
+    </ion-slide>
+    <ion-slide>
+      <ion-card class="brewery-card"><ion-card-content>3</ion-card-content></ion-card>
+    </ion-slide>
   </ion-slides>
 </ion-content>
