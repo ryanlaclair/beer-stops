@@ -45,9 +45,21 @@ export class GoogleMapsProvider {
         }
 
         this.map = new google.maps.Map(this.mapElement, mapOptions);
+
+        let markerOptions = {
+          position: latLng,
+          map: this.map,
+          clickable: false
+        }
+
+        this.currentMarker = new google.maps.Marker(markerOptions);
+
         resolve(true);
       });
     });
+  }
+
+  addMarker() {
   }
 
 }
