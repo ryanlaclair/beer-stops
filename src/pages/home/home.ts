@@ -8,8 +8,21 @@ import { NavController } from 'ionic-angular';
 
 export class HomePage {
 
-  constructor(public navCtrl: NavController) {
+  breweries: Array<any> = [
+    {
+      name: "Brewery 1"
+    },
+    {
+      name: "Brewery 2"
+    },
+    {
+      name: "Brewery 3"
+    },
+    {
+      name: "Brewery 4"
+    }
+  ];
 
-  }
+  constructor(public navCtrl: NavController) { }
 
 }

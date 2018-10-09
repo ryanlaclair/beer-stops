@@ -12,14 +12,8 @@
   </ion-card>
   
   <ion-slides pager>
-    <ion-slide>
-      <ion-card class="brewery-card"><ion-card-content>1</ion-card-content></ion-card>
-    </ion-slide>
-    <ion-slide>
-      <ion-card class="brewery-card"><ion-card-content>2</ion-card-content></ion-card>
-    </ion-slide>
-    <ion-slide>
-      <ion-card class="brewery-card"><ion-card-content>3</ion-card-content></ion-card>
+    <ion-slide *ngFor="let brewery of breweries">
+      <brewery [name]="brewery.name"></brewery>
     </ion-slide>
   </ion-slides>
 </ion-content>

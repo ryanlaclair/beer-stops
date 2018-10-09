@@ -8,12 +8,14 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { MapComponent } from '../components/map/map';
+import { BreweryComponent } from '../components/brewery/brewery';
 import { GoogleMapsProvider } from '../providers/google-maps/google-maps';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
+    BreweryComponent,
     MapComponent
   ],
   imports: [
