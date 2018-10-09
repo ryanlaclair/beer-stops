@@ -8,7 +8,7 @@ export class GoogleMapsProvider {
   map: any;
   currentMarker: any;
   
-  apiKey: string = 'AIzaSyCIx0MKgQnr03E1koIG5ojQAUivrlY34LM';
+  private apiKey: string = 'AIzaSyCIx0MKgQnr03E1koIG5ojQAUivrlY34LM';
 
   constructor(private geolocation: Geolocation) { }
 
