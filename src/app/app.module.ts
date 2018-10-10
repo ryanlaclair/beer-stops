@@ -11,7 +11,7 @@ import { HomePage } from '../pages/home/home';
 import { MapComponent } from '../components/map/map';
 import { BreweryComponent } from '../components/brewery/brewery';
 import { GoogleMapsProvider } from '../providers/google-maps/google-maps';
-import { BeerMappingProvider } from '../providers/beer-mapping/beer-mapping';
+import { BreweryMappingProvider } from '../providers/brewery-mapping/brewery-mapping';
 
 @NgModule({
   declarations: [
@@ -35,7 +35,7 @@ import { BeerMappingProvider } from '../providers/beer-mapping/beer-mapping';
     SplashScreen,
     Geolocation,
     GoogleMapsProvider,
-    BeerMappingProvider,
+    BreweryMappingProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

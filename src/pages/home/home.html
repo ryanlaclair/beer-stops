@@ -6,12 +6,12 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding no-bounce>
   <ion-card class="map-card">
     <map></map>
   </ion-card>
   
-  <ion-slides pager>
+  <ion-slides loop>
     <ion-slide *ngFor="let brewery of breweries">
       <brewery [name]="brewery.name"></brewery>
     </ion-slide>

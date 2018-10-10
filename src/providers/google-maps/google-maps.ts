@@ -6,31 +6,16 @@ export class GoogleMapsProvider {
 
   mapElement: any;
   map: any;
-  currentMarker: any;
-  
-  private apiKey: string = 'AIzaSyCIx0MKgQnr03E1koIG5ojQAUivrlY34LM';
+  geocoder: any;
+  userMarker: any;
+
+  breweryMarkers: Array<any>;
 
   constructor(private geolocation: Geolocation) { }
 
-  loadMap(mapElement: any): Promise<any> {
+  initializeMap(mapElement: any): Promise<any> {
     this.mapElement = mapElement;
 
-    return new Promise((resolve) => {
-      window['initializeMap'] = () => {
-        this.initializeMap().then(() => {
-          resolve(true);
-        });
-      }
-
-      let script = document.createElement("script");
-      script.id = "googleMaps";
-      script.src = 'http://maps.google.com/maps/api/js?key=' + this.apiKey + '&callback=initializeMap';
-
-      document.body.appendChild(script);
-    });
-  }
-
-  initializeMap(): Promise<any> {
     return new Promise((resolve) => {
       this.geolocation.getCurrentPosition().then((position) => {
         let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -49,17 +34,64 @@ export class GoogleMapsProvider {
         let markerOptions = {
           position: latLng,
           map: this.map,
-          clickable: false
+          clickable: false,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 5,
+            strokeColor: 'red'
+          }
         }
 
-        this.currentMarker = new google.maps.Marker(markerOptions);
+        this.userMarker = new google.maps.Marker(markerOptions);
 
         resolve(true);
       });
     });
   }
 
-  addMarker() {
+  getState(): Promise<any> {
+    return new Promise((resolve) => {
+      this.geolocation.getCurrentPosition().then((position) => {
+        if (this.geocoder == null) {
+          this.geocoder = new google.maps.Geocoder();
+        }
+        
+        let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+  
+        this.geocoder.geocode({ location: latLng }, (results, status) => {
+          results[0].address_components.forEach((addressComponent) => {
+            if (addressComponent.types[0] == 'administrative_area_level_1') {
+              resolve(addressComponent.short_name);
+            }
+          });
+        });
+      });
+    });
+  }
+
+  addMarker(address: string) {
+    return new Promise((resolve) => {
+      if (this.geocoder == null) {
+        this.geocoder = new google.maps.Geocoder();
+      }
+
+      this.geocoder.geocode({ address: address }, (results, status) => {
+        console.log(status);
+
+        if (status === 'OK') {
+          let latLng = new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lon());
+
+          let markerOptions = {
+            position: latLng,
+            map: this.map,
+            clickable: false
+          }
+
+          this.breweryMarkers.push(new google.maps.Marker(markerOptions));
+          resolve(true);
+        }
+      });
+    });
   }
 
 }

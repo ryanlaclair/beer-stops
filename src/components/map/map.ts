@@ -14,7 +14,7 @@ export class MapComponent {
   constructor(private mapsProvider: GoogleMapsProvider) { }
 
   ngOnInit(): void {
-    this.mapsProvider.loadMap(this.mapElement.nativeElement);
+    this.mapsProvider.initializeMap(this.mapElement.nativeElement);
   }
 
 }

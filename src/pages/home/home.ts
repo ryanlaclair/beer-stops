@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
-import { BeerMappingProvider } from '../../providers/beer-mapping/beer-mapping';
+import { GoogleMapsProvider } from '../../providers/google-maps/google-maps';
+import { BreweryMappingProvider, BeerSpot } from '../../providers/brewery-mapping/brewery-mapping';
 
 @Component({
   selector: 'page-home',
@@ -10,23 +11,21 @@ import { BeerMappingProvider } from '../../providers/beer-mapping/beer-mapping';
 
 export class HomePage {
 
-  breweries: Array<any> = [
-    {
-      name: "Brewery 1"
-    },
-    {
-      name: "Brewery 2"
-    },
-    {
-      name: "Brewery 3"
-    },
-    {
-      name: "Brewery 4"
-    }
-  ];
+  breweries: Array<BeerSpot>;
 
-  constructor(public navCtrl: NavController, private beerProvider: BeerMappingProvider) { 
-    this.beerProvider.getBreweriesInState();
+  constructor(public navCtrl: NavController, private mapsProvider: GoogleMapsProvider, private breweryProvider: BreweryMappingProvider) { 
+    this.mapsProvider.getState().then((state) => {
+      this.breweryProvider.getBreweriesInState(state).subscribe((breweries: any) => {
+        this.breweries = breweries;
+
+        breweries.forEach((brewery, index) => {
+          setTimeout(() => {
+            let address: string = brewery.street + ' ' + brewery.city + ', ' + brewery.state;
+            this.mapsProvider.addMarker(address);
+          }, index*500)
+        });
+      });
+    })
   }
 
 }
