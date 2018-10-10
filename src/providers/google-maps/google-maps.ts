@@ -49,26 +49,6 @@ export class GoogleMapsProvider {
     });
   }
 
-  getState(): Promise<any> {
-    return new Promise((resolve) => {
-      this.geolocation.getCurrentPosition().then((position) => {
-        if (this.geocoder == null) {
-          this.geocoder = new google.maps.Geocoder();
-        }
-        
-        let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-  
-        this.geocoder.geocode({ location: latLng }, (results, status) => {
-          results[0].address_components.forEach((addressComponent) => {
-            if (addressComponent.types[0] == 'administrative_area_level_1') {
-              resolve(addressComponent.short_name);
-            }
-          });
-        });
-      });
-    });
-  }
-
   addMarker(address: string) {
     return new Promise((resolve) => {
       if (this.geocoder == null) {
