@@ -49,9 +49,9 @@ export class GoogleMapsProvider {
     });
   }
 
-  addMarker(latitude: number, longitude: number) {
+  addMarker(address: string) {
     return new Promise((resolve) => {
-      resolve(true);
+      
     });
   }
 

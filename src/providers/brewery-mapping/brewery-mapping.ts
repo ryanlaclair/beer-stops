@@ -48,11 +48,7 @@ export class BreweryMappingProvider {
     let url: string = this.baseUrl + '/locstate/' + this.apiKey + '/' + state + '&s=json';
 
     return this.http.get<Array<BeerSpot>>(url).pipe(
-      map(spots => spots.filter(spot => spot.status === 'Brewery').map((brewery) => {
-        this.addBreweryLocation(brewery);
-
-        return brewery;
-      }))
+      map(spots => spots.filter(spot => spot.status === 'Brewery'))
     );
   }
 
@@ -67,7 +63,13 @@ export class BreweryMappingProvider {
         }
       }
       else {
-        // user geocoder to get location
+        let address: string = brewery.street + ' ' + brewery.city + ', ' + brewery.state;
+        this.geocodingProvider.forwardGeocode(address).then((location) => {
+          brewery.location = {
+            latitude: parseFloat(location.latitude),
+            longitude: parseFloat(location.longitude)
+          }
+        });
       }
     });
   }

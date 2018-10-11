@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
 import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult } from '@ionic-native/native-geocoder';
 
+import { getStateCodeByStateName } from 'us-state-codes';
+
 @Injectable()
 export class GeocodingProvider {
 
@@ -30,6 +32,8 @@ export class GeocodingProvider {
   reverseGeocode(latitude: number, longitude: number): Promise<NativeGeocoderReverseResult> {
     return new Promise((resolve) => {
       this.nativeGeocoder.reverseGeocode(latitude, longitude).then((result) => {
+        result[0].administrativeArea = getStateCodeByStateName(result[0].administrativeArea);
+
         resolve(result[0]);
       }).catch((error) => {
         resolve(this.googleReverseGeocode(latitude, longitude));
@@ -83,22 +87,22 @@ export class GeocodingProvider {
                 nativeResult.countryName = component.long_name;
                 break;
               case 'postal_code':
-                nativeResult.postalCode = component.short_name;
+                nativeResult.postalCode = component.long_name;
                 break;
               case 'administrative_area_level_1':
                 nativeResult.administrativeArea = component.short_name;
                 break;
               case 'administrative_area_level_2':
-                nativeResult.subAdministrativeArea = component.short_name;
+                nativeResult.subAdministrativeArea = component.long_name;
                 break;
               case 'locality':
-                nativeResult.locality = component.short_name;
+                nativeResult.locality = component.long_name;
                 break;
               case 'route':
-                nativeResult.thoroughfare = component.short_name;
+                nativeResult.thoroughfare = component.long_name;
                 break;
               case 'street_number':
-                nativeResult.subThoroughfare = component.short_name;
+                nativeResult.subThoroughfare = component.long_name;
                 break;
             }
           });
