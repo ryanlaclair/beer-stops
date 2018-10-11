@@ -16,9 +16,10 @@ export class HomePage {
 
   constructor(public navCtrl: NavController, private mapsProvider: GoogleMapsProvider, private geocodingProvider: GeocodingProvider, private breweryProvider: BreweryMappingProvider) { 
     this.geocodingProvider.getState().then((state) => {
-      console.log(state);
-    //   this.breweryProvider.getBreweriesInState(state).subscribe((breweries: any) => {
-    //     this.breweries = breweries;
+      this.breweryProvider.getBreweriesInState(state).subscribe((breweries: any) => {
+        this.breweries = breweries;
+
+        console.log(this.breweries);
 
     //     breweries.forEach((brewery, index) => {
     //       setTimeout(() => {
@@ -26,7 +27,7 @@ export class HomePage {
     //         this.mapsProvider.addMarker(address);
     //       }, index*500)
     //     });
-    //   });
+      });
     });
   }
 

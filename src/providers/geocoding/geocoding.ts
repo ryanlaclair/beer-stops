@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
-import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder';
+import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult } from '@ionic-native/native-geocoder';
 
 @Injectable()
 export class GeocodingProvider {
@@ -37,7 +37,7 @@ export class GeocodingProvider {
     });
   }
 
-  googleForwardGeocode(address: string): Promise<NativeGeocoderForwardResult> {
+  private googleForwardGeocode(address: string): Promise<NativeGeocoderForwardResult> {
     return new Promise((resolve, reject) => {
       let googleGeocoder = new google.maps.Geocoder();
 
@@ -57,7 +57,7 @@ export class GeocodingProvider {
     });
   }
 
-  googleReverseGeocode(latitude: number, longitude: number): Promise<NativeGeocoderReverseResult> {
+  private googleReverseGeocode(latitude: number, longitude: number): Promise<NativeGeocoderReverseResult> {
     return new Promise((resolve, reject) => {
       let latLng = new google.maps.LatLng(latitude, longitude);
       let googleGeocoder = new google.maps.Geocoder();

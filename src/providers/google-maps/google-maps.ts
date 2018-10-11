@@ -49,28 +49,9 @@ export class GoogleMapsProvider {
     });
   }
 
-  addMarker(address: string) {
+  addMarker(latitude: number, longitude: number) {
     return new Promise((resolve) => {
-      if (this.geocoder == null) {
-        this.geocoder = new google.maps.Geocoder();
-      }
-
-      this.geocoder.geocode({ address: address }, (results, status) => {
-        console.log(status);
-
-        if (status === 'OK') {
-          let latLng = new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lon());
-
-          let markerOptions = {
-            position: latLng,
-            map: this.map,
-            clickable: false
-          }
-
-          this.breweryMarkers.push(new google.maps.Marker(markerOptions));
-          resolve(true);
-        }
-      });
+      resolve(true);
     });
   }
 
