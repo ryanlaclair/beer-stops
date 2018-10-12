@@ -1,1 +1,11 @@
-<ion-card class="brewery-card"><ion-card-content>{{name}}</ion-card-content></ion-card>
+<ion-card class="brewery-card">
+  <ion-card-header>
+    {{brewery.name}}
+  </ion-card-header>
+  <ion-card-content>
+    <div>{{brewery.street}}</div>
+    <div>{{brewery.city}}, {{brewery.state}} {{brewery.zip}}</div>
+    <div>{{brewery.phone}}</div>
+    <a href="http://{{brewery.url}}" target="_blank">{{brewery.url}}</a>
+  </ion-card-content>
+</ion-card>

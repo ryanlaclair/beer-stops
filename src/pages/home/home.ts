@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
-import { GoogleMapsProvider } from '../../providers/google-maps/google-maps';
 import { GeocodingProvider } from '../../providers/geocoding/geocoding';
 import { BreweryMappingProvider, BeerSpot } from '../../providers/brewery-mapping/brewery-mapping';
+import { GoogleMapsProvider } from '../../providers/google-maps/google-maps';
 
 @Component({
   selector: 'page-home',
@@ -14,7 +14,7 @@ export class HomePage {
 
   breweries: Array<BeerSpot> = new Array();
 
-  constructor(public navCtrl: NavController, private mapsProvider: GoogleMapsProvider, private geocodingProvider: GeocodingProvider, private breweryProvider: BreweryMappingProvider) { }
+  constructor(public navCtrl: NavController, private geocodingProvider: GeocodingProvider, private breweryProvider: BreweryMappingProvider, private mapsProvider: GoogleMapsProvider ) { }
 
   ngOnInit() {
     this.getBreweries();
@@ -22,46 +22,16 @@ export class HomePage {
 
   private getBreweries() {
     this.geocodingProvider.getCityState().then((cityState: any) => {
-      this.getCityBreweries(cityState.city).then(() => {
-        this.getStateBreweries(cityState.state);
-      })
-    });
-  }
+      this.breweryProvider.getBreweriesInCity(cityState.city).subscribe((cityBrewery: BeerSpot) => {
+        this.addBrewery(cityBrewery);
 
-  private getCityBreweries(city: string): Promise<any> {
-    return new Promise<any>((resolve) => {
-      this.breweryProvider.getBreweriesInCity(city).subscribe((breweries: Array<BeerSpot>) => {
-        breweries.forEach((brewery: BeerSpot, index: number) => {
-          setTimeout(() => {
-            this.breweryProvider.addBreweryLocation(brewery).then(() => {
-              this.breweryProvider.addBreweryDistance(brewery).then(() => {
-                this.addBrewery(brewery);
-                this.mapsProvider.addMarker(brewery.location.latitude, brewery.location.longitude);
-              });
-            });
-          }, index*300);
-        });
-      }, () => { }, () => {
-        resolve(true);
+        this.mapsProvider.addMarker(cityBrewery.location.latitude, cityBrewery.location.longitude);
       });
-    });
-  }
 
-  private getStateBreweries(state: string): Promise<any> {
-    return new Promise<any>((resolve) => {
-      this.breweryProvider.getBreweriesInState(state).subscribe((breweries: Array<BeerSpot>) => {
-        breweries.forEach((brewery: BeerSpot, index: number) => {
-          setTimeout(() => {
-            this.breweryProvider.addBreweryLocation(brewery).then(() => {
-              this.breweryProvider.addBreweryDistance(brewery).then(() => {
-                this.addBrewery(brewery);
-                this.mapsProvider.addMarker(brewery.location.latitude, brewery.location.longitude);
-              });
-            });
-          }, index*300); 
-        });
-      }, () => { }, () => {
-        resolve(true);
+      this.breweryProvider.getBreweriesInState(cityState.state).subscribe((stateBrewery: BeerSpot) => {
+        this.addBrewery(stateBrewery);
+
+        this.mapsProvider.addMarker(stateBrewery.location.latitude, stateBrewery.location.longitude);
       });
     });
   }
@@ -78,8 +48,6 @@ export class HomePage {
         return a.distance - b.distance;
       });
     }
-
-    console.log(brewery);
   }
 
 }

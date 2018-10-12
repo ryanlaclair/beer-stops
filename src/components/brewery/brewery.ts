@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+import { BeerSpot } from '../../providers/brewery-mapping/brewery-mapping';
+
 @Component({
   selector: 'brewery',
   templateUrl: 'brewery.html'
@@ -7,7 +9,7 @@ import { Component, Input } from '@angular/core';
 
 export class BreweryComponent {
 
-  @Input() name: string;
+  @Input() brewery: BeerSpot;
 
   constructor() { }
 

@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Geolocation } from '@ionic-native/geolocation';
+import { IonicStorageModule } from '@ionic/storage';
 import { Observable } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { GeocodingProvider } from '../geocoding/geocoding';
 import { GoogleMapsProvider } from '../google-maps/google-maps';
 
@@ -44,25 +44,64 @@ export class BreweryMappingProvider {
   private baseUrl: string = 'http://beermapping.com/webservice';
   private apiKey: string = '5b77e963c25ac961737246e98c014a4e';
 
+  cityBreweries: Array<BeerSpot>;
+  stateBreweries: Array<BeerSpot>;
+
   constructor(private http: HttpClient, private mapsProvider: GoogleMapsProvider, private geocodingProvider: GeocodingProvider) { }
 
-  getBreweriesInCity(city: string): Observable<Array<BeerSpot>> {
-    let url: string = this.baseUrl + '/loccity/' + this.apiKey + '/' + city + '&s=json';
+  getBreweriesInCity(city: string): Observable<BeerSpot> {
+    return new Observable<BeerSpot>((observer) => {
+      // check storage
 
-    return this.http.get<Array<BeerSpot>>(url).pipe(
-      map(spots => spots.filter(spot => spot.status === 'Brewery'))
-    );
+      let url: string = this.baseUrl + '/loccity/' + this.apiKey + '/' + city + '&s=json';
+
+      this.cityBreweries = new Array();
+
+      this.http.get<Array<BeerSpot>>(url).pipe(
+        map(spots => spots.filter(spot => spot.status === 'Brewery'))
+      ).subscribe((breweries: Array<BeerSpot>) => {
+        breweries.forEach((brewery: BeerSpot, index: number) => {
+          setTimeout(() => {
+            this.addBreweryLocation(brewery).then((brewery: BeerSpot) => {
+              this.addBreweryDistance(brewery).then((brewery: BeerSpot) => {
+                observer.next(brewery);
+
+                this.cityBreweries.push(brewery);
+              });
+            });
+          }, index*500);
+        });
+      });
+    });
   }
 
-  getBreweriesInState(state: string): Observable<Array<BeerSpot>> {
-    let url: string = this.baseUrl + '/locstate/' + this.apiKey + '/' + state + '&s=json';
+  getBreweriesInState(state: string): Observable<BeerSpot> {
+    return new Observable<BeerSpot>((observer) => {
+      // check storage
 
-    return this.http.get<Array<BeerSpot>>(url).pipe(
-      map(spots => spots.filter(spot => spot.status === 'Brewery'))
-    );
+      let url: string = this.baseUrl + '/locstate/' + this.apiKey + '/' + state + '&s=json';
+
+      this.stateBreweries = new Array();
+
+      this.http.get<Array<BeerSpot>>(url).pipe(
+        map(spots => spots.filter(spot => spot.status === 'Brewery'))
+      ).subscribe((breweries: Array<BeerSpot>) => {
+        breweries.forEach((brewery: BeerSpot, index: number) => {
+          setTimeout(() => {
+            this.addBreweryLocation(brewery).then((brewery: BeerSpot) => {
+              this.addBreweryDistance(brewery).then((brewery: BeerSpot) => {
+                observer.next(brewery);
+
+                this.stateBreweries.push(brewery);
+              });
+            });
+          }, index*500);
+        });
+      });
+    });
   }
 
-  addBreweryLocation(brewery: BeerSpot): Promise<BeerSpot> {
+  private addBreweryLocation(brewery: BeerSpot): Promise<BeerSpot> {
     return new Promise((resolve) => {
       let url: string = this.baseUrl + '/locmap/' + this.apiKey + '/' + brewery.id + '&s=json';
 
@@ -90,7 +129,7 @@ export class BreweryMappingProvider {
     });
   }
 
-  addBreweryDistance(brewery: BeerSpot): Promise<BeerSpot> {
+  private addBreweryDistance(brewery: BeerSpot): Promise<BeerSpot> {
     return new Promise((resolve) => {
       let position = this.mapsProvider.getUserPosition();
 
