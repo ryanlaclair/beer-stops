@@ -6,10 +6,10 @@ export class GoogleMapsProvider {
 
   mapElement: any;
   map: any;
-  geocoder: any;
+  userPosition: any;
   userMarker: any;
 
-  breweryMarkers: Array<any>;
+  breweryMarkers: Array<any> = new Array();
 
   constructor(private geolocation: Geolocation) { }
 
@@ -18,6 +18,8 @@ export class GoogleMapsProvider {
 
     return new Promise((resolve) => {
       this.geolocation.getCurrentPosition().then((position) => {
+        this.userPosition = position;
+
         let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
         let mapOptions = {
@@ -49,10 +51,23 @@ export class GoogleMapsProvider {
     });
   }
 
-  addMarker(address: string) {
+  addMarker(latitude: number, longitude: number): Promise<any> {
     return new Promise((resolve) => {
-      
+      let latLng = new google.maps.LatLng(latitude, longitude);
+
+      let markerOptions = {
+        position: latLng,
+        map: this.map,
+        clickable: false
+      }
+
+      this.breweryMarkers.push(new google.maps.Marker(markerOptions));
+      resolve(true);
     });
+  }
+
+  getUserPosition() {
+    return this.userPosition;
   }
 
 }

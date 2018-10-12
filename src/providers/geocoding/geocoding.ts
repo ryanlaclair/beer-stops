@@ -9,11 +9,14 @@ export class GeocodingProvider {
 
   constructor(private geolocation: Geolocation, private nativeGeocoder: NativeGeocoder) { }
 
-  getState(): Promise<any> {
+  getCityState(): Promise<any> {
     return new Promise((resolve) => {
       this.geolocation.getCurrentPosition().then((position) => {
         this.reverseGeocode(position.coords.latitude, position.coords.longitude).then((result) => {
-          resolve(result.administrativeArea);
+          resolve({
+            city: result.locality,
+            state: result.administrativeArea
+          });
         })
       });
     });
