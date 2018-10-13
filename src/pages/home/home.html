@@ -11,7 +11,7 @@
     <map></map>
   </ion-card>
   
-  <ion-slides loop>
+  <ion-slides (ionSlideDidChange)="handleSlideChange()" loop>
     <ion-slide *ngFor="let brewery of breweries">
       <brewery [brewery]="brewery"></brewery>
     </ion-slide>
