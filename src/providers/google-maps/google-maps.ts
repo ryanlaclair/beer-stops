@@ -68,16 +68,18 @@ export class GoogleMapsProvider {
     });
 
     let bounds = new google.maps.LatLngBounds();
+    let userLatLng = new google.maps.LatLng(this.getUserPosition().latitude, this.getUserPosition().longitude);
 
-    bounds.extend(new google.maps.LatLng(this.userPosition.coords.latitude, this.userPosition.coords.longitude));
+    bounds.extend(userLatLng);
     bounds.extend(marker.getPosition());
 
-    this.map.fitBounds(bounds);
+    this.map.fitBounds(bounds, 100);
+
     this.bounceMarker(marker);
   }
 
-  getUserPosition() {
-    return this.userPosition;
+  getUserPosition(): Geoposition['coords'] {
+    return this.userPosition.coords;
   }
 
   private bounceMarker(marker: google.maps.Marker) {

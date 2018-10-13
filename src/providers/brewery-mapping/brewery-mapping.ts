@@ -172,7 +172,7 @@ export class BreweryMappingProvider {
     return new Promise((resolve) => {
       let position = this.mapsProvider.getUserPosition();
 
-      let startLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      let startLatLng = new google.maps.LatLng(position.latitude, position.longitude);
       let endLatLng = new google.maps.LatLng(brewery.location.latitude, brewery.location.longitude);
 
       brewery.distance = google.maps.geometry.spherical.computeDistanceBetween(startLatLng, endLatLng);
