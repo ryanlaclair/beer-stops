@@ -4,14 +4,24 @@ import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 @Injectable()
 export class GoogleMapsProvider {
 
+  mapElement: any;
+
   map: google.maps.Map;
   userPosition: Geoposition;
 
-  markers: Array<google.maps.Marker> = new Array();
+  markers: Array<google.maps.Marker>;
 
   constructor(private geolocation: Geolocation) { }
 
   initializeMap(mapElement: any) {
+    this.mapElement = mapElement;
+
+    this.drawMap();
+  }
+
+  drawMap() {
+    this.markers = new Array();
+
     this.geolocation.getCurrentPosition().then((position) => {
       this.userPosition = position;
 
@@ -26,7 +36,7 @@ export class GoogleMapsProvider {
         streetViewControl: false
       }
 
-      this.map = new google.maps.Map(mapElement, mapOptions);
+      this.map = new google.maps.Map(this.mapElement, mapOptions);
 
       let markerOptions = {
         position: latLng,
@@ -36,7 +46,8 @@ export class GoogleMapsProvider {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 5,
           strokeColor: 'blue'
-        }
+        },
+        zIndex: 999
       }
 
       new google.maps.Marker(markerOptions);

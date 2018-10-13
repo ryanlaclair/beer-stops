@@ -36,6 +36,15 @@ export class HomePage {
     this.mapsProvider.showMarker(brewery.id);
   }
 
+  refresh() {
+    this.slides.slideTo(0);
+
+    this.mapsProvider.drawMap();
+
+    this.breweries = new Array();
+    this.getBreweries();
+  }
+
   private getBreweries() {
     this.geocodingProvider.getCityState().then((cityState: any) => {
       this.breweryProvider.getBreweriesInCity(cityState.city).subscribe((cityBrewery: BeerSpot) => {
