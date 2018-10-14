@@ -59,7 +59,7 @@ export class BreweryMenuPage {
 
   // open the brewery website in browser
   visitWebsite() {
-    this.iab.create('http://' + this.brewery.url);
+    this.iab.create('http://' + this.brewery.url, '_blank');
     this.close();
   }
 }
