@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { Platform } from 'ionic-angular';
 
 @Injectable()
 export class GoogleMapsProvider {
@@ -10,7 +11,7 @@ export class GoogleMapsProvider {
 
   markers: Array<google.maps.Marker>;
 
-  constructor(private geolocation: Geolocation) {}
+  constructor(private platform: Platform, private geolocation: Geolocation) {}
 
   // initialize the map element
   initializeMap(mapElement: any) {
@@ -23,38 +24,46 @@ export class GoogleMapsProvider {
   drawMap() {
     this.markers = new Array();
 
-    this.geolocation.getCurrentPosition().then(position => {
-      this.userPosition = position;
+    this.platform.ready().then(() => {
+      this.geolocation
+        .getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 10000
+        })
+        .then(position => {
+          this.userPosition = position;
 
-      let latLng = new google.maps.LatLng(
-        position.coords.latitude,
-        position.coords.longitude
-      );
+          let latLng = new google.maps.LatLng(
+            position.coords.latitude,
+            position.coords.longitude
+          );
 
-      let mapOptions = {
-        center: latLng,
-        zoom: 15,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        mapTypeControl: false,
-        fullscreenControl: false,
-        streetViewControl: false
-      };
+          let mapOptions = {
+            center: latLng,
+            zoom: 15,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            streetViewControl: false
+          };
 
-      this.map = new google.maps.Map(this.mapElement, mapOptions);
+          this.map = new google.maps.Map(this.mapElement, mapOptions);
 
-      let markerOptions = {
-        position: latLng,
-        map: this.map,
-        clickable: false,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 5,
-          strokeColor: 'blue'
-        },
-        zIndex: 999
-      };
+          let markerOptions = {
+            position: latLng,
+            map: this.map,
+            clickable: false,
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 5,
+              strokeColor: 'blue'
+            },
+            zIndex: 999
+          };
 
-      new google.maps.Marker(markerOptions);
+          new google.maps.Marker(markerOptions);
+        });
     });
   }
 

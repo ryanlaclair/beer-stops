@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, Slides } from 'ionic-angular';
+import { Slides } from 'ionic-angular';
 
 import { GeocodingProvider } from '../../providers/geocoding/geocoding';
 import {
@@ -19,7 +19,6 @@ export class HomePage {
   breweries: Array<BeerSpot> = new Array();
 
   constructor(
-    public navCtrl: NavController,
     private geocodingProvider: GeocodingProvider,
     private breweryProvider: BreweryMappingProvider,
     private mapsProvider: GoogleMapsProvider

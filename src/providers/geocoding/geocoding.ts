@@ -7,10 +7,12 @@ import {
 } from '@ionic-native/native-geocoder';
 
 import { getStateCodeByStateName } from 'us-state-codes';
+import { Platform } from 'ionic-angular';
 
 @Injectable()
 export class GeocodingProvider {
   constructor(
+    private platform: Platform,
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder
   ) {}
@@ -18,16 +20,24 @@ export class GeocodingProvider {
   // get the user current city and state
   getCityState(): Promise<any> {
     return new Promise(resolve => {
-      this.geolocation.getCurrentPosition().then(position => {
-        this.reverseGeocode(
-          position.coords.latitude,
-          position.coords.longitude
-        ).then(result => {
-          resolve({
-            city: result.locality,
-            state: result.administrativeArea
+      this.platform.ready().then(() => {
+        this.geolocation
+          .getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 10000
+          })
+          .then(position => {
+            this.reverseGeocode(
+              position.coords.latitude,
+              position.coords.longitude
+            ).then(result => {
+              resolve({
+                city: result.locality,
+                state: result.administrativeArea
+              });
+            });
           });
-        });
       });
     });
   }
