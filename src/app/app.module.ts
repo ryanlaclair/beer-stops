@@ -15,11 +15,13 @@ import { BreweryComponent } from '../components/brewery/brewery';
 import { GoogleMapsProvider } from '../providers/google-maps/google-maps';
 import { BreweryMappingProvider } from '../providers/brewery-mapping/brewery-mapping';
 import { GeocodingProvider } from '../providers/geocoding/geocoding';
+import { BreweryMenuPage } from '../pages/brewery-menu/brewery-menu';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
+    BreweryMenuPage,
     BreweryComponent,
     MapComponent
   ],
@@ -32,7 +34,8 @@ import { GeocodingProvider } from '../providers/geocoding/geocoding';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage
+    HomePage,
+    BreweryMenuPage
   ],
   providers: [
     StatusBar,

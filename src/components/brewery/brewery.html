@@ -1,11 +1,19 @@
 <ion-card class="brewery-card">
-  <ion-card-header>
-    {{brewery.name}}
-  </ion-card-header>
-  <ion-card-content>
-    <div>{{brewery.street}}</div>
-    <div>{{brewery.city}}, {{brewery.state}} {{brewery.zip}}</div>
-    <div>{{brewery.phone}}</div>
-    <a href="http://{{brewery.url}}" target="_blank">{{brewery.url}}</a>
+  <ion-card-content no-padding>
+    <ion-card-title>
+      {{brewery.name}}
+    </ion-card-title>
+    <p>
+      {{brewery.street}}
+    </p>
+    <p>
+      {{brewery.city}}, {{brewery.state}} {{brewery.zip}}
+    </p>
   </ion-card-content>
+
+  <div class="menu-button">
+    <button ion-button icon-only clear color="dark" (click)="showBreweryMenu($event)">
+      <ion-icon name="more"></ion-icon>
+    </button>
+  </div>
 </ion-card>
