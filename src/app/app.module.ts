@@ -7,6 +7,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Geolocation } from '@ionic-native/geolocation';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
+import { CallNumber } from '@ionic-native/call-number';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { LaunchNavigator } from '@ionic-native/launch-navigator';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -42,6 +45,9 @@ import { BreweryMenuPage } from '../pages/brewery-menu/brewery-menu';
     SplashScreen,
     Geolocation,
     NativeGeocoder,
+    CallNumber,
+    InAppBrowser,
+    LaunchNavigator,
     GoogleMapsProvider,
     BreweryMappingProvider,
     GeocodingProvider,
