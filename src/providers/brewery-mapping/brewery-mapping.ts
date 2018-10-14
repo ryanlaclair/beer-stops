@@ -6,6 +6,8 @@ import { map } from 'rxjs/operators';
 import { GeocodingProvider } from '../geocoding/geocoding';
 import { GoogleMapsProvider } from '../google-maps/google-maps';
 
+// the BeerSpot object returned by the Beer Mapping API, extended to include
+// location and distance
 export interface BeerSpot {
   id: number,
   name: string,
@@ -29,6 +31,7 @@ export interface BeerSpot {
   distance: number
 }
 
+// the location object returned by the Beer Mapping API
 interface BreweryLocation {
   altmap: string,
   lat: string,
@@ -38,6 +41,7 @@ interface BreweryLocation {
   status: string
 }
 
+// the location data object used to cache info to storage
 interface LocationData {
   name: string,
   data: Array<BeerSpot>,
@@ -50,10 +54,15 @@ export class BreweryMappingProvider {
   private baseUrl: string = 'http://beermapping.com/webservice';
   private apiKey: string = '5b77e963c25ac961737246e98c014a4e';
 
-  constructor(private http: HttpClient, private storage: Storage, private mapsProvider: GoogleMapsProvider, private geocodingProvider: GeocodingProvider) { }
+  constructor(private http: HttpClient, 
+    private storage: Storage, 
+    private mapsProvider: GoogleMapsProvider, 
+    private geocodingProvider: GeocodingProvider) { }
 
+  // get the list of breweries in the specified city
   getBreweriesInCity(city: string): Observable<BeerSpot> {
     return new Observable<BeerSpot>((observer) => {
+
       this.checkStorage(city).then((breweries: Array<BeerSpot>) => {
         breweries.forEach((brewery: BeerSpot) => {
           observer.next(brewery);
