@@ -8,13 +8,13 @@ import { BreweryMenuPage } from '../../pages/brewery-menu/brewery-menu';
   selector: 'brewery',
   templateUrl: 'brewery.html'
 })
-
 export class BreweryComponent {
+  @Input()
+  brewery: BeerSpot;
 
-  @Input() brewery: BeerSpot;
+  constructor(private popoverCtrl: PopoverController) {}
 
-  constructor(private popoverCtrl: PopoverController) { }
-
+  // show the popover menu when the button is clicked
   showBreweryMenu(event: any) {
     let breweryMenu = this.popoverCtrl.create(BreweryMenuPage, {
       brewery: this.brewery
@@ -24,5 +24,4 @@ export class BreweryComponent {
       ev: event
     });
   }
-
 }

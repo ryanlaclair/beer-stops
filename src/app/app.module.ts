@@ -35,11 +35,7 @@ import { BreweryMenuPage } from '../pages/brewery-menu/brewery-menu';
     IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-    HomePage,
-    BreweryMenuPage
-  ],
+  entryComponents: [MyApp, HomePage, BreweryMenuPage],
   providers: [
     StatusBar,
     SplashScreen,
@@ -51,7 +47,7 @@ import { BreweryMenuPage } from '../pages/brewery-menu/brewery-menu';
     GoogleMapsProvider,
     BreweryMappingProvider,
     GeocodingProvider,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
 export class AppModule {}

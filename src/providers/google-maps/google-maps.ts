@@ -3,7 +3,6 @@ import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
 @Injectable()
 export class GoogleMapsProvider {
-
   mapElement: any;
 
   map: google.maps.Map;
@@ -11,21 +10,26 @@ export class GoogleMapsProvider {
 
   markers: Array<google.maps.Marker>;
 
-  constructor(private geolocation: Geolocation) { }
+  constructor(private geolocation: Geolocation) {}
 
+  // initialize the map element
   initializeMap(mapElement: any) {
     this.mapElement = mapElement;
 
     this.drawMap();
   }
 
+  // draw the map using the Google maps API
   drawMap() {
     this.markers = new Array();
 
-    this.geolocation.getCurrentPosition().then((position) => {
+    this.geolocation.getCurrentPosition().then(position => {
       this.userPosition = position;
 
-      let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      let latLng = new google.maps.LatLng(
+        position.coords.latitude,
+        position.coords.longitude
+      );
 
       let mapOptions = {
         center: latLng,
@@ -34,7 +38,7 @@ export class GoogleMapsProvider {
         mapTypeControl: false,
         fullscreenControl: false,
         streetViewControl: false
-      }
+      };
 
       this.map = new google.maps.Map(this.mapElement, mapOptions);
 
@@ -48,13 +52,19 @@ export class GoogleMapsProvider {
           strokeColor: 'blue'
         },
         zIndex: 999
-      }
+      };
 
       new google.maps.Marker(markerOptions);
     });
   }
 
-  addMarker(latitude: number, longitude: number, id: number, clickHandler: Function) {
+  // add a marker to the map
+  addMarker(
+    latitude: number,
+    longitude: number,
+    id: number,
+    clickHandler: Function
+  ) {
     let latLng = new google.maps.LatLng(latitude, longitude);
 
     let markerOptions = {
@@ -62,7 +72,7 @@ export class GoogleMapsProvider {
       map: this.map,
       clickable: true,
       id: id
-    }
+    };
 
     let marker = new google.maps.Marker(markerOptions);
     this.markers.push(marker);
@@ -73,13 +83,19 @@ export class GoogleMapsProvider {
     });
   }
 
+  // zoom and pan the map to show the current marker
   showMarker(id: number) {
-    let marker: google.maps.Marker = this.markers.find((marker: google.maps.Marker) => {
-      return marker.get('id') == id;
-    });
+    let marker: google.maps.Marker = this.markers.find(
+      (marker: google.maps.Marker) => {
+        return marker.get('id') == id;
+      }
+    );
 
     let bounds = new google.maps.LatLngBounds();
-    let userLatLng = new google.maps.LatLng(this.getUserPosition().latitude, this.getUserPosition().longitude);
+    let userLatLng = new google.maps.LatLng(
+      this.getUserPosition().latitude,
+      this.getUserPosition().longitude
+    );
 
     bounds.extend(userLatLng);
     bounds.extend(marker.getPosition());
@@ -89,10 +105,12 @@ export class GoogleMapsProvider {
     this.bounceMarker(marker);
   }
 
+  // get the user position and return the coordinates
   getUserPosition(): Geoposition['coords'] {
     return this.userPosition.coords;
   }
 
+  // bounce a marker on the map for 2 cycles
   private bounceMarker(marker: google.maps.Marker) {
     marker.setAnimation(google.maps.Animation.BOUNCE);
 
@@ -100,5 +118,4 @@ export class GoogleMapsProvider {
       marker.setAnimation(null);
     }, 1400);
   }
-
 }

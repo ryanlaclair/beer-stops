@@ -1,78 +1,113 @@
 import { Injectable } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
-import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult } from '@ionic-native/native-geocoder';
+import {
+  NativeGeocoder,
+  NativeGeocoderReverseResult,
+  NativeGeocoderForwardResult
+} from '@ionic-native/native-geocoder';
 
 import { getStateCodeByStateName } from 'us-state-codes';
 
 @Injectable()
 export class GeocodingProvider {
+  constructor(
+    private geolocation: Geolocation,
+    private nativeGeocoder: NativeGeocoder
+  ) {}
 
-  constructor(private geolocation: Geolocation, private nativeGeocoder: NativeGeocoder) { }
-
+  // get the user current city and state
   getCityState(): Promise<any> {
-    return new Promise((resolve) => {
-      this.geolocation.getCurrentPosition().then((position) => {
-        this.reverseGeocode(position.coords.latitude, position.coords.longitude).then((result) => {
+    return new Promise(resolve => {
+      this.geolocation.getCurrentPosition().then(position => {
+        this.reverseGeocode(
+          position.coords.latitude,
+          position.coords.longitude
+        ).then(result => {
           resolve({
             city: result.locality,
             state: result.administrativeArea
           });
-        })
+        });
       });
     });
   }
 
+  // perform a forward geocoding of an address
   forwardGeocode(address: string): Promise<NativeGeocoderForwardResult> {
-    return new Promise((resolve) => {
-      this.nativeGeocoder.forwardGeocode(address).then((result) => {
-        resolve(result[0]);
-      }).catch((error) => {
-        resolve(this.googleForwardGeocode(address));
-      });
+    return new Promise(resolve => {
+      // use native geocoder if available
+      this.nativeGeocoder
+        .forwardGeocode(address)
+        .then(result => {
+          resolve(result[0]);
+        })
+        // if native geocoder not available, use Google geocoder
+        .catch(error => {
+          resolve(this.googleForwardGeocode(address));
+        });
     });
   }
 
-  reverseGeocode(latitude: number, longitude: number): Promise<NativeGeocoderReverseResult> {
-    return new Promise((resolve) => {
-      this.nativeGeocoder.reverseGeocode(latitude, longitude).then((result) => {
-        result[0].administrativeArea = getStateCodeByStateName(result[0].administrativeArea);
+  // perform a reverse geocoding of a location
+  reverseGeocode(
+    latitude: number,
+    longitude: number
+  ): Promise<NativeGeocoderReverseResult> {
+    return new Promise(resolve => {
+      // use native geocoder if available
+      this.nativeGeocoder
+        .reverseGeocode(latitude, longitude)
+        .then(result => {
+          result[0].administrativeArea = getStateCodeByStateName(
+            result[0].administrativeArea
+          );
 
-        resolve(result[0]);
-      }).catch((error) => {
-        resolve(this.googleReverseGeocode(latitude, longitude));
-      });
+          resolve(result[0]);
+        })
+        // if native geocoder not available, use Google geocoder
+        .catch(error => {
+          resolve(this.googleReverseGeocode(latitude, longitude));
+        });
     });
   }
 
-  private googleForwardGeocode(address: string): Promise<NativeGeocoderForwardResult> {
+  // forward geocode using the Google API
+  private googleForwardGeocode(
+    address: string
+  ): Promise<NativeGeocoderForwardResult> {
     return new Promise((resolve, reject) => {
       let googleGeocoder = new google.maps.Geocoder();
 
       googleGeocoder.geocode({ address: address }, (result, status) => {
         if (status == google.maps.GeocoderStatus.OK) {
+          // translate into the format used by the native geocoder
           let nativeResult: NativeGeocoderForwardResult = {
             latitude: result[0].geometry.location.lat().toString(),
             longitude: result[0].geometry.location.lng().toString()
-          }
-          
+          };
+
           resolve(nativeResult);
-        }
-        else {
+        } else {
           reject(status);
         }
       });
     });
   }
 
-  private googleReverseGeocode(latitude: number, longitude: number): Promise<NativeGeocoderReverseResult> {
+  // reverse geocode using the Google API
+  private googleReverseGeocode(
+    latitude: number,
+    longitude: number
+  ): Promise<NativeGeocoderReverseResult> {
     return new Promise((resolve, reject) => {
       let latLng = new google.maps.LatLng(latitude, longitude);
       let googleGeocoder = new google.maps.Geocoder();
-  
+
       googleGeocoder.geocode({ location: latLng }, (result, status) => {
         if (status == google.maps.GeocoderStatus.OK) {
+          // translate into the format used by the native geocoder
           let nativeResult: NativeGeocoderReverseResult = {
-            countryCode: '',	
+            countryCode: '',
             countryName: '',
             postalCode: '',
             administrativeArea: '',
@@ -81,11 +116,11 @@ export class GeocodingProvider {
             subLocality: '',
             thoroughfare: '',
             subThoroughfare: ''
-          }
-          
-          result[0].address_components.forEach((component) => {
+          };
+
+          result[0].address_components.forEach(component => {
             switch (component.types[0]) {
-              case 'country': 
+              case 'country':
                 nativeResult.countryCode = component.short_name;
                 nativeResult.countryName = component.long_name;
                 break;
@@ -111,12 +146,10 @@ export class GeocodingProvider {
           });
 
           resolve(nativeResult);
-        }
-        else {
+        } else {
           reject(status);
         }
       });
     });
   }
-
 }

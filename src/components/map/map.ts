@@ -6,15 +6,13 @@ import { GoogleMapsProvider } from '../../providers/google-maps/google-maps';
   selector: 'map',
   templateUrl: 'map.html'
 })
-
 export class MapComponent {
+  @ViewChild('map')
+  mapElement: ElementRef;
 
-  @ViewChild('map') mapElement: ElementRef;
-
-  constructor(private mapsProvider: GoogleMapsProvider) { }
+  constructor(private mapsProvider: GoogleMapsProvider) {}
 
   ngOnInit(): void {
     this.mapsProvider.initializeMap(this.mapElement.nativeElement);
   }
-
 }
