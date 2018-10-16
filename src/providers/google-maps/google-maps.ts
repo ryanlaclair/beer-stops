@@ -128,6 +128,10 @@ export class GoogleMapsProvider {
     });
   }
 
+  getCenter(): google.maps.LatLng {
+    return this.center;
+  }
+
   // bounce a marker on the map for 2 cycles
   private bounceMarker(marker: google.maps.Marker) {
     marker.setAnimation(google.maps.Animation.BOUNCE);
