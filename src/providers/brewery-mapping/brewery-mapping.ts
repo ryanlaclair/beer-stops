@@ -66,8 +66,15 @@ export class BreweryMappingProvider {
       // first check if the city has been cached in storage
       this.checkStorage(city)
         .then((breweries: Array<BeerSpot>) => {
-          breweries.forEach((brewery: BeerSpot) => {
-            observer.next(brewery);
+          breweries.forEach((brewery: BeerSpot, index: number) => {
+            // use a timeout to not exceed query limits
+            setTimeout(() => {
+              this.addBreweryLocation(brewery).then((brewery: BeerSpot) => {
+                this.addBreweryDistance(brewery).then((brewery: BeerSpot) => {
+                  observer.next(brewery);
+                });
+              });
+            }, index * 500);
           });
         })
         // if it has not been cached, retreive from the Beer Mapping API
@@ -81,6 +88,8 @@ export class BreweryMappingProvider {
             // filter to only breweries
             .pipe(map(spots => spots.filter(spot => spot.status === 'Brewery')))
             .subscribe((breweries: Array<BeerSpot>) => {
+              this.addStorage(city, breweries);
+
               breweries.forEach((brewery: BeerSpot, index: number) => {
                 // use a timeout to not exceed query limits
                 setTimeout(() => {
@@ -88,11 +97,6 @@ export class BreweryMappingProvider {
                     this.addBreweryDistance(brewery).then(
                       (brewery: BeerSpot) => {
                         observer.next(brewery);
-
-                        // save to storage when done
-                        if (index == breweries.length - 1) {
-                          this.addStorage(city, breweries);
-                        }
                       }
                     );
                   });
@@ -109,8 +113,15 @@ export class BreweryMappingProvider {
       // first check if the city has been cached in storage
       this.checkStorage(state)
         .then((breweries: Array<BeerSpot>) => {
-          breweries.forEach((brewery: BeerSpot) => {
-            observer.next(brewery);
+          breweries.forEach((brewery: BeerSpot, index: number) => {
+            // use a timeout to not exceed query limits
+            setTimeout(() => {
+              this.addBreweryLocation(brewery).then((brewery: BeerSpot) => {
+                this.addBreweryDistance(brewery).then((brewery: BeerSpot) => {
+                  observer.next(brewery);
+                });
+              });
+            }, index * 500);
           });
         })
         // if it has not been cached, retreive from the Beer Mapping API
@@ -123,6 +134,8 @@ export class BreweryMappingProvider {
             // filter to only breweries
             .pipe(map(spots => spots.filter(spot => spot.status === 'Brewery')))
             .subscribe((breweries: Array<BeerSpot>) => {
+              this.addStorage(state, breweries);
+
               breweries.forEach((brewery: BeerSpot, index: number) => {
                 // use a timeout to not exceed query limits
                 setTimeout(() => {
@@ -130,11 +143,6 @@ export class BreweryMappingProvider {
                     this.addBreweryDistance(brewery).then(
                       (brewery: BeerSpot) => {
                         observer.next(brewery);
-
-                        // save to storage when done
-                        if (index == breweries.length - 1) {
-                          this.addStorage(state, breweries);
-                        }
                       }
                     );
                   });
