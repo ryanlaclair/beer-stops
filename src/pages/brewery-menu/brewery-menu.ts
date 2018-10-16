@@ -41,20 +41,27 @@ export class BreweryMenuPage {
 
   // open for navigation in prefered navigation app
   getDirections() {
-    let start: string =
-      this.mapsProvider.getUserPosition().latitude +
-      ', ' +
-      this.mapsProvider.getUserPosition().longitude;
+    this.mapsProvider.getUserPosition().then(position => {
+      let start: string = position.latitude + ',' + position.longitude;
 
-    let end: string =
-      this.brewery.location.latitude + ', ' + this.brewery.location.longitude;
+      let end: string =
+        this.brewery.location.latitude + ',' + this.brewery.location.longitude;
 
-    let navigatorOptions: LaunchNavigatorOptions = {
-      start: start
-    };
+      let navigatorOptions: LaunchNavigatorOptions = {
+        start: start
+      };
 
-    this.launchNavigator.navigate(end, navigatorOptions);
-    this.close();
+      this.launchNavigator.navigate(end, navigatorOptions).catch(() => {
+        let url: string =
+          'http://www.google.com/maps/dir/?api=1&origin=' +
+          start +
+          '&destination=' +
+          end;
+
+        this.iab.create(url, '_blank');
+      });
+      this.close();
+    });
   }
 
   // open the brewery website in browser
