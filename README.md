@@ -17,11 +17,12 @@ npm install --save
 
 ### Test
 
-To open in browser (localhost:8000):
+To open in browser (localhost:8100):
 ```
 ionic serve
 ```
 Once launched, open the developer tools, toggle the "device toolbar" and select the desired mobile device size.
+After resizing, you may need to reload the page.
 
 ### Build
 
