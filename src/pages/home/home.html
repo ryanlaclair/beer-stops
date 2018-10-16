@@ -2,11 +2,17 @@
 
   <ion-navbar>
 
-    <ion-title>
+    <ion-title *ngIf="!showSearch">
       Beer Stops
     </ion-title>
 
+    <ion-searchbar [(ngModel)]="searchTerms" (search)="search($event)" (ionCancel)="cancelSearch()" showCancelButton="true"
+      animated="true" placeholder="City, State" *ngIf="showSearch"></ion-searchbar>
+
     <ion-buttons end>
+      <button ion-button icon-only (click)="toggleSearch()">
+        <ion-icon name="search" *ngIf="!showSearch"></ion-icon>
+      </button>
       <button ion-button icon-only (click)="refresh()">
         <ion-icon name="refresh"></ion-icon>
       </button>
@@ -22,7 +28,7 @@
     <map></map>
   </ion-card>
 
-  <ion-slides (ionSlideDidChange)="handleSlideChange()" loop>
+  <ion-slides (ionSlideDidChange)="handleSlideChange()">
     <ion-slide *ngFor="let brewery of breweries">
       <brewery [brewery]="brewery"></brewery>
     </ion-slide>

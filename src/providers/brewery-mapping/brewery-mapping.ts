@@ -217,25 +217,25 @@ export class BreweryMappingProvider {
   // add a distance from the user to the BeerSpot
   private addBreweryDistance(brewery: BeerSpot): Promise<BeerSpot> {
     return new Promise(resolve => {
-      let position = this.mapsProvider.getUserPosition();
+      this.mapsProvider.getUserPosition().then(position => {
+        let startLatLng = new google.maps.LatLng(
+          position.latitude,
+          position.longitude
+        );
 
-      let startLatLng = new google.maps.LatLng(
-        position.latitude,
-        position.longitude
-      );
+        let endLatLng = new google.maps.LatLng(
+          brewery.location.latitude,
+          brewery.location.longitude
+        );
 
-      let endLatLng = new google.maps.LatLng(
-        brewery.location.latitude,
-        brewery.location.longitude
-      );
+        // calculate the distance
+        brewery.distance = google.maps.geometry.spherical.computeDistanceBetween(
+          startLatLng,
+          endLatLng
+        );
 
-      // calculate the distance
-      brewery.distance = google.maps.geometry.spherical.computeDistanceBetween(
-        startLatLng,
-        endLatLng
-      );
-
-      resolve(brewery);
+        resolve(brewery);
+      });
     });
   }
 }

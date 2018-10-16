@@ -7,6 +7,10 @@ import {
   BeerSpot
 } from '../../providers/brewery-mapping/brewery-mapping';
 import { GoogleMapsProvider } from '../../providers/google-maps/google-maps';
+import {
+  NativeGeocoderForwardResult,
+  NativeGeocoderReverseResult
+} from '@ionic-native/native-geocoder';
 
 @Component({
   selector: 'page-home',
@@ -15,6 +19,12 @@ import { GoogleMapsProvider } from '../../providers/google-maps/google-maps';
 export class HomePage {
   @ViewChild(Slides)
   slides: Slides;
+
+  showSearch: boolean = false;
+  searchTerms: string;
+
+  currentCity: string;
+  currentState: string;
 
   breweries: Array<BeerSpot> = new Array();
 
@@ -25,7 +35,7 @@ export class HomePage {
   ) {}
 
   ngOnInit() {
-    this.getBreweries();
+    this.getLocalBreweries();
   }
 
   // update slider when the user clicks a marker
@@ -41,52 +51,116 @@ export class HomePage {
 
   // update map when the user slides the slider
   handleSlideChange() {
-    let brewery = this.breweries[this.slides.getActiveIndex()];
+    let index = this.slides.getActiveIndex();
 
-    this.mapsProvider.showMarker(brewery.id);
+    if (index < this.breweries.length) {
+      let brewery = this.breweries[this.slides.getActiveIndex()];
+
+      this.mapsProvider.showMarker(brewery.id);
+    }
+  }
+
+  // toggle the boolean to show the search bar
+  toggleSearch() {
+    this.showSearch = !this.showSearch;
+  }
+
+  // perform a search
+  search() {
+    this.toggleSearch();
+
+    this.geocodingProvider
+      .forwardGeocode(this.searchTerms)
+      .then((forwardResult: NativeGeocoderForwardResult) => {
+        this.mapsProvider.addCenter(
+          parseFloat(forwardResult.latitude),
+          parseFloat(forwardResult.longitude)
+        );
+
+        this.geocodingProvider
+          .reverseGeocode(
+            parseFloat(forwardResult.latitude),
+            parseFloat(forwardResult.longitude)
+          )
+          .then((reverseResult: NativeGeocoderReverseResult) => {
+            this.currentCity = reverseResult.locality;
+            this.currentState = reverseResult.administrativeArea;
+
+            this.slides.slideTo(0);
+            this.mapsProvider.drawMap();
+            this.breweries = new Array();
+
+            this.getBreweriesInCity();
+          });
+      });
+
+    this.searchTerms = '';
+  }
+
+  // cancel the search
+  cancelSearch() {
+    this.toggleSearch();
+    this.searchTerms = '';
   }
 
   // return the the first slide, redraw map and get new list of breweries
   refresh() {
     this.slides.slideTo(0);
 
-    this.mapsProvider.drawMap();
+    this.mapsProvider.addUserLocation().then(() => {
+      this.mapsProvider.drawMap();
 
-    this.breweries = new Array();
-    this.getBreweries();
+      this.breweries = new Array();
+      this.getLocalBreweries();
+    });
   }
 
   // get the list of breweries
-  private getBreweries() {
+  private getLocalBreweries() {
     this.geocodingProvider.getCityState().then((cityState: any) => {
-      // first get the breweries in the user city
-      this.breweryProvider
-        .getBreweriesInCity(cityState.city)
-        .subscribe((cityBrewery: BeerSpot) => {
-          if (this.addBrewery(cityBrewery)) {
-            this.mapsProvider.addMarker(
-              cityBrewery.location.latitude,
-              cityBrewery.location.longitude,
-              cityBrewery.id,
-              this.handleMarkerClick.bind(this)
-            );
-          }
-        });
+      this.currentCity = cityState.city;
+      this.currentState = cityState.state;
 
-      // next get the breweries in the user state
-      this.breweryProvider
-        .getBreweriesInState(cityState.state)
-        .subscribe((stateBrewery: BeerSpot) => {
-          if (this.addBrewery(stateBrewery)) {
-            this.mapsProvider.addMarker(
-              stateBrewery.location.latitude,
-              stateBrewery.location.longitude,
-              stateBrewery.id,
-              this.handleMarkerClick.bind(this)
-            );
-          }
-        });
+      this.getBreweries();
     });
+  }
+
+  private getBreweries() {
+    // first get the breweries in the user city
+    this.getBreweriesInCity();
+
+    // next get the breweries in the user state
+    this.getBreweriesInState();
+  }
+
+  private getBreweriesInCity() {
+    this.breweryProvider
+      .getBreweriesInCity(this.currentCity)
+      .subscribe((cityBrewery: BeerSpot) => {
+        if (this.addBrewery(cityBrewery)) {
+          this.mapsProvider.addMarker(
+            cityBrewery.location.latitude,
+            cityBrewery.location.longitude,
+            cityBrewery.id,
+            this.handleMarkerClick.bind(this)
+          );
+        }
+      });
+  }
+
+  private getBreweriesInState() {
+    this.breweryProvider
+      .getBreweriesInState(this.currentState)
+      .subscribe((stateBrewery: BeerSpot) => {
+        if (this.addBrewery(stateBrewery)) {
+          this.mapsProvider.addMarker(
+            stateBrewery.location.latitude,
+            stateBrewery.location.longitude,
+            stateBrewery.id,
+            this.handleMarkerClick.bind(this)
+          );
+        }
+      });
   }
 
   // add a brewery to the display if it doesn't already exist
